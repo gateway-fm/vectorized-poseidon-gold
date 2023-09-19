@@ -1,5 +1,7 @@
 #include "CWrapper.h"
 
+bool initialized = false;
+
 void hashAvx512(unsigned long long *input, unsigned long long *capacity, unsigned long long *result) {
     const Goldilocks::Element goldilocksInput[12] = {
         Goldilocks::fromU64(input[0]),
@@ -29,6 +31,11 @@ void hashAvx512(unsigned long long *input, unsigned long long *capacity, unsigne
         Goldilocks::fromU64(0),
         Goldilocks::fromU64(0),
     };
+
+    if (!initialized) {
+        Goldilocks::initialize_avx512();
+        initialized = true;
+    }
 
     PoseidonGoldilocks::hash_full_result_avx512(goldilocksResult, goldilocksInput);
 

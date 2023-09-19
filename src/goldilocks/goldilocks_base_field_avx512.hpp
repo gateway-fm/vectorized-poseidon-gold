@@ -16,6 +16,16 @@
 // 1.  a + b overflows iff (a + b) < a (AVX does not suport carry, this is the way to check)
 // 2.  a - b underflows iff (a - b) > a (AVX does not suport carry, this is the way to check)
 
+inline __m512i P8;
+inline __m512i P8_n;
+inline __m512i sqmask8;
+
+inline void Goldilocks::initialize_avx512() {
+    P8 = _mm512_set_epi64(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
+    P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
+    sqmask8 = _mm512_set_epi64(0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF);
+}
+
 inline void Goldilocks::load_avx512(__m512i &a, const Goldilocks::Element *a8)
 {
     a = _mm512_loadu_si512((__m512i *)(a8));
@@ -40,15 +50,12 @@ inline void Goldilocks::store_avx512_a(Goldilocks::Element *a8_a, const __m512i 
 // We assume a <= a_c+P
 inline void Goldilocks::toCanonical_avx512(__m512i &a_c, const __m512i &a)
 {
-    static const __m512i P8 = _mm512_set_epi64(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     __mmask8 result_mask = _mm512_cmpge_epu64_mask(a, P8);
     a_c = _mm512_mask_add_epi64(a, result_mask, a, P8_n);
 }
 
 inline void Goldilocks::add_avx512(__m512i &c, const __m512i &a, const __m512i &b)
 {
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     // Evaluate a_c
     __m512i a_c;
     toCanonical_avx512(a_c, a);
@@ -65,7 +72,6 @@ inline void Goldilocks::add_avx512(__m512i &c, const __m512i &a, const __m512i &
 // Assume b is in canonical form
 inline void Goldilocks::add_avx512_b_c(__m512i &c, const __m512i &a, const __m512i &b_c)
 {
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     const __m512i c0 = _mm512_add_epi64(a, b_c);
     __mmask8 result_mask = _mm512_cmpgt_epu64_mask(a, c0);
     c = _mm512_mask_add_epi64(c0, result_mask, c0, P8_n);
@@ -73,8 +79,6 @@ inline void Goldilocks::add_avx512_b_c(__m512i &c, const __m512i &a, const __m51
 
 inline void Goldilocks::sub_avx512(__m512i &c, const __m512i &a, const __m512i &b)
 {
-    static const __m512i P8 = _mm512_set_epi64(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
-
     __m512i b_c;
     toCanonical_avx512(b_c, b);
     const __m512i c0 = _mm512_sub_epi64(a, b_c);
@@ -88,7 +92,6 @@ inline void Goldilocks::sub_avx512(__m512i &c, const __m512i &a, const __m512i &
 
 inline void Goldilocks::sub_avx512_b_c(__m512i &c, const __m512i &a, const __m512i &b_c)
 {
-    static const __m512i P8 = _mm512_set_epi64(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
     const __m512i c0 = _mm512_sub_epi64(a, b_c);
     __mmask8 result_mask = _mm512_cmpgt_epu64_mask(b_c, a);
     c = _mm512_mask_add_epi64(c0, result_mask, c0, P8);
@@ -112,7 +115,6 @@ inline void Goldilocks::mult_avx512_8(__m512i &c, const __m512i &a, const __m512
 // The 128 bits of the result are stored in c_h[64:0]| c_l[64:0]
 inline void Goldilocks::mult_avx512_128(__m512i &c_h, __m512i &c_l, const __m512i &a, const __m512i &b)
 {
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
 
     // Obtain a_h and b_h in the lower 32 bits
     __m512i a_h = _mm512_castps_si512(_mm512_movehdup_ps(_mm512_castsi512_ps(a)));
@@ -204,8 +206,6 @@ inline void Goldilocks::mult_avx512_72(__m512i &c_h, __m512i &c_l, const __m512i
 //             = [c_hh(P-1) +c_hl*P_n+c_l] = [c_l-c_hh+c_hl*P_n]
 inline void Goldilocks::reduce_avx512_128_64(__m512i &c, const __m512i &c_h, const __m512i &c_l)
 {
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
-
     __m512i c_hh = _mm512_srli_epi64(c_h, 32);
     __m512i c1;
     sub_avx512_b_c(c1, c_l, c_hh);
@@ -224,8 +224,6 @@ inline void Goldilocks::reduce_avx512_128_64(__m512i &c, const __m512i &c_h, con
 //             = [c_hl*P_n+c_l] = [c_l+c_hl*P_n]
 inline void Goldilocks::reduce_avx512_96_64(__m512i &c, const __m512i &c_h, const __m512i &c_l)
 {
-    static const __m512i P8_n = _mm512_set_epi64(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
-
     __m512i c1 = _mm512_mul_epu32(c_h, P8_n); // c_hl*P_n (only 32bits of c_h useds)
     add_avx512_b_c(c, c_l, c1);               // c2 = c_hl*P_n <= (2^32-1)*(2^32-1) <= 2^64 -2^33+1 < P
 }
@@ -239,8 +237,6 @@ inline void Goldilocks::square_avx512(__m512i &c, __m512i &a)
 
 inline void Goldilocks::square_avx512_128(__m512i &c_h, __m512i &c_l, const __m512i &a)
 {
-    static const __m512i sqmask8 = _mm512_set_epi64(0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF);
-
     // Obtain a_h
     __m512i a_h = _mm512_castps_si512(_mm512_movehdup_ps(_mm512_castsi512_ps(a)));
 

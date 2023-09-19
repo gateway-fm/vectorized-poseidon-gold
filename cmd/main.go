@@ -10,6 +10,7 @@ import (
 	"golang.org/x/sys/cpu"
 
 	"github.com/gateway-fm/vectorized-poseidon-gold/src/vectorizedposeidongold"
+	goldenposeidon "github.com/iden3/go-iden3-crypto/goldenposeidon"
 )
 
 func main() {
@@ -35,37 +36,36 @@ func main() {
 		}
 	}
 
-	var average time.Duration
+	var averageVectorized time.Duration
 
 	for k := 0; k < TESTS; k++ {
 		start := time.Now()
 		fmt.Printf("Run %d of %d\n", k+1, TESTS)
 		for i := 0; i < SIZE; i++ {
-			// cInput := (*C.ulonglong)(unsafe.Pointer(&input[i][0]))
-			// cCapacity := (*C.ulonglong)(unsafe.Pointer(&capacity[0]))
-			// cResult := (*C.ulonglong)(unsafe.Pointer(&result[0]))
-			// C.hash(cInput, cCapacity, cResult)
 			vectorizedposeidongold.HashWithResult(&input[i], &capacity, &result)
-
-			// result, _ = Hash(input[i], capacity)
-			// for j := 0; j < 4; j++ {
-			// 	if result[j] != resultTest[j] {
-			// 		panic("DIFF")
-			// 	}
-			// }
-
-			// if err != nil {
-			// 	panic(err)
-			// }
-			// fmt.Printf("Desired hash of %s is: %s\n", fmt.Sprintf("%v-%v", input[i], capacity), fmt.Sprintf("%v", h))
 		}
 		elapsed := time.Since(start)
-		average += elapsed
+		averageVectorized += elapsed
 		fmt.Printf("%d milliseconds\n", elapsed.Milliseconds())
 	}
-	fmt.Printf("%d average milliseconds\n", average.Milliseconds()/int64(TESTS))
-
+	fmt.Printf("%d average vectorized milliseconds\n", averageVectorized.Milliseconds()/int64(TESTS))
 	fmt.Println(result)
+
+	var averageRegular time.Duration
+	for k := 0; k < TESTS; k++ {
+		start := time.Now()
+		fmt.Printf("Run %d of %d\n", k+1, TESTS)
+		for i := 0; i < SIZE; i++ {
+			result, _ = goldenposeidon.Hash(input[i], capacity)
+		}
+		elapsed := time.Since(start)
+		averageRegular += elapsed
+		fmt.Printf("%d milliseconds\n", elapsed.Milliseconds())
+	}
+	fmt.Printf("%d average regular milliseconds\n", averageRegular.Milliseconds()/int64(TESTS))
+	fmt.Println(result)
+
+	fmt.Printf("Performance gain %.2f\n", float64(averageRegular.Milliseconds())/float64(averageVectorized.Milliseconds()))
 
 	// h, err := Hash(in, capacity)
 	// if err != nil {
