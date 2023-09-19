@@ -24,6 +24,6 @@ build-x86_64-avx512:
 	g++ --shared -o ./build/libvectorizedposeidongold.x86_64.avx512.so ./*.o
 	rm -rf ./*.o && rm -rf ./src/goldilocks/*.gch && rm -rf ./src/cwrapper/*.gch
 
-build:
-	go build -mod=readonly -o ./build/wrapper -ldflags="-s -w" ./src/gowrapper/
+build-vectorizedposeidongold:
+	go build -mod=readonly -o ./build/vectorizedposeidongold -ldflags="-s -w" ./src/vectorizedposeidongold/
 
