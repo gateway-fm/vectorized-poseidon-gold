@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ledgerwatch/vectorized-poseidon-gold/src/vectorizedposeidongold"
+	"github.com/gateway-fm/vectorized-poseidon-gold/src/vectorizedposeidongold"
 
 	goldenposeidon "github.com/iden3/go-iden3-crypto/goldenposeidon"
 )
