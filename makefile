@@ -25,5 +25,5 @@ build-x86_64-avx512:
 	rm -rf ./*.o && rm -rf ./src/goldilocks/*.gch && rm -rf ./src/cwrapper/*.gch
 
 build-vectorizedposeidongold:
-	go build -mod=readonly -o ./build/vectorizedposeidongold -ldflags="-s -w" ./src/vectorizedposeidongold/
+	go build -mod=readonly -o ./build/vectorizedposeidongold -ldflags="-s -w" ./cmd
 
