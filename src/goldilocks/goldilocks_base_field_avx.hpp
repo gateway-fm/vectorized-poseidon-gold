@@ -1,5 +1,6 @@
 #ifndef GOLDILOCKS_AVX
 #define GOLDILOCKS_AVX
+#ifdef __AVX2__
 #include "goldilocks_base_field.hpp"
 #include <immintrin.h>
 
@@ -1579,4 +1580,5 @@ inline void Goldilocks::mul_avx(Element *c, uint64_t offset_c[4], const __m256i 
         c[offset_c[k]] = c4[k];
     }
 };
+#endif
 #endif

@@ -1,6 +1,6 @@
 #include "CWrapper.h"
 
-void hash(unsigned long long *input, unsigned long long *capacity, unsigned long long *result) {
+void hashAvx2(unsigned long long *input, unsigned long long *capacity, unsigned long long *result) {
     const Goldilocks::Element goldilocksInput[12] = {
         Goldilocks::fromU64(input[0]),
         Goldilocks::fromU64(input[1]),
@@ -30,7 +30,7 @@ void hash(unsigned long long *input, unsigned long long *capacity, unsigned long
         Goldilocks::fromU64(0),
     };
 
-    PoseidonGoldilocks::hash_full_result_seq(goldilocksResult, goldilocksInput);
+    PoseidonGoldilocks::hash_full_result(goldilocksResult, goldilocksInput);
 
     result[0] = Goldilocks::toU64(goldilocksResult[0]);
     result[1] = Goldilocks::toU64(goldilocksResult[1]);

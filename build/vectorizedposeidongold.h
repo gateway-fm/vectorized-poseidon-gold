@@ -12,6 +12,8 @@ capacity - array with 4 elements
 result - array with 4 elements
 */
 void hash(unsigned long long *, unsigned long long *, unsigned long long *);
+void hashAvx2(unsigned long long *, unsigned long long *, unsigned long long *);
+void hashAvx512(unsigned long long *, unsigned long long *, unsigned long long *);
 
 #ifdef __cplusplus
 }

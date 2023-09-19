@@ -3,7 +3,7 @@ package main
 /*
 #cgo CFLAGS: -fPIC
 #cgo CXXFLAGS: -fPIC
-#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/../../build -fPIC -lvectorizedposeidongold.x86_64 -lgmp -lomp -L${SRCDIR}/../../build
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/../../build -fPIC -lvectorizedposeidongold.x86_64 -lvectorizedposeidongold.x86_64.avx2 -lvectorizedposeidongold.x86_64.avx512 -lgmp -lomp -L${SRCDIR}/../../build
 #include "../../build/vectorizedposeidongold.h"
 */
 import "C"
@@ -22,7 +22,7 @@ func Hash(in [8]uint64, capacity [4]uint64) ([4]uint64, error) {
 	cCapacity := (*C.ulonglong)(unsafe.Pointer(&capacity[0]))
 	cResult := (*C.ulonglong)(unsafe.Pointer(&result[0]))
 
-	C.hash(cInput, cCapacity, cResult)
+	C.hashAvx2(cInput, cCapacity, cResult)
 
 	return result, nil
 }
