@@ -1,4 +1,4 @@
-module github.com/ledgerwatch/vectorized-poseidon-gold
+module github.com/gateway-fm/vectorized-poseidon-gold
 
 go 1.20
 
