@@ -19,12 +19,6 @@
 // 3. (unsigned) a < (unsigned) b iff (signed) a_s < (singed) b_s (AVX2 does not support unsingend 64-bit comparisons)
 // 4. a_s + b = (a+b)_s. Dem: a+(1<<63)+b = a+b+(1<<63)
 
-const __m256i MSB = _mm256_set_epi64x(MSB_, MSB_, MSB_, MSB_);
-const __m256i P = _mm256_set_epi64x(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
-const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
-const __m256i P_s = _mm256_xor_si256(P, MSB);
-const __m256i sqmask = _mm256_set_epi64x(0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF);
-
 inline void Goldilocks::set_avx(__m256i &a, const Goldilocks::Element &a0, const Goldilocks::Element &a1, const Goldilocks::Element &a2, const Goldilocks::Element &a3)
 {
     a = _mm256_set_epi64x(a3.fe, a2.fe, a1.fe, a0.fe);
@@ -54,6 +48,7 @@ inline void Goldilocks::store_avx_a(Goldilocks::Element *a4_a, const __m256i &a)
 
 inline void Goldilocks::shift_avx(__m256i &a_s, const __m256i &a)
 {
+    static const __m256i MSB = _mm256_set_epi64x(MSB_, MSB_, MSB_, MSB_);
     a_s = _mm256_xor_si256(a, MSB);
 }
 
@@ -71,6 +66,10 @@ inline void Goldilocks::toCanonical_avx(__m256i &a_c, const __m256i &a)
 // a_s  a shifted
 inline void Goldilocks::toCanonical_avx_s(__m256i &a_sc, const __m256i &a_s)
 {
+    static const __m256i P = _mm256_set_epi64x(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
+    static const __m256i MSB = _mm256_set_epi64x(MSB_, MSB_, MSB_, MSB_);
+    static const __m256i P_s = _mm256_xor_si256(P, MSB);
+    static const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     // a_s < P_s iff a < P. Then iff a >= P the mask bits are 0
     __m256i mask1_ = _mm256_cmpgt_epi64(P_s, a_s);
     __m256i corr1_ = _mm256_andnot_si256(mask1_, P_n);
@@ -88,6 +87,7 @@ inline void Goldilocks::add_avx(__m256i &c, const __m256i &a, const __m256i &b)
 // we assume a given in shifted cannonical form (a_sc)
 inline void Goldilocks::add_avx_a_sc(__m256i &c, const __m256i &a_sc, const __m256i &b)
 {
+    static const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     // addition (if only one of the arguments is shifted the sumation is shifted)
     const __m256i c0_s = _mm256_add_epi64(a_sc, b);
 
@@ -143,6 +143,7 @@ inline void Goldilocks::add_avx_b_small(__m256i &c, const __m256i &a, const __m2
 //
 inline void Goldilocks::sub_avx(__m256i &c, const __m256i &a, const __m256i &b)
 {
+    static const __m256i P = _mm256_set_epi64x(GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME, GOLDILOCKS_PRIME);
     __m256i b_s, b_sc, a_s;
     shift_avx(b_s, b);
     shift_avx(a_s, a);
@@ -192,6 +193,7 @@ inline void Goldilocks::mult_avx_8(__m256i &c, const __m256i &a, const __m256i &
 // The 128 bits of the result are stored in c_h[64:0]| c_l[64:0]
 inline void Goldilocks::mult_avx_128(__m256i &c_h, __m256i &c_l, const __m256i &a, const __m256i &b)
 {
+    static const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     // Obtain a_h and b_h in the lower 32 bits
     //__m256i a_h = _mm256_srli_epi64(a, 32);
     //__m256i b_h = _mm256_srli_epi64(b, 32);
@@ -285,6 +287,7 @@ inline void Goldilocks::mult_avx_72(__m256i &c_h, __m256i &c_l, const __m256i &a
 //             = [c_hh(P-1) +c_hl*P_n+c_l] = [c_l-c_hh+c_hl*P_n]
 inline void Goldilocks::reduce_avx_128_64(__m256i &c, const __m256i &c_h, const __m256i &c_l)
 {
+    static const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     __m256i c_hh = _mm256_srli_epi64(c_h, 32);
     __m256i c1_s, c_ls, c_s;
     shift_avx(c_ls, c_l);
@@ -305,6 +308,7 @@ inline void Goldilocks::reduce_avx_128_64(__m256i &c, const __m256i &c_h, const 
 //             = [c_hl*P_n+c_l] = [c_l+c_hl*P_n]
 inline void Goldilocks::reduce_avx_96_64(__m256i &c, const __m256i &c_h, const __m256i &c_l)
 {
+    static const __m256i P_n = _mm256_set_epi64x(GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG, GOLDILOCKS_PRIME_NEG);
     __m256i c1 = _mm256_mul_epu32(c_h, P_n); // c_hl*P_n (only 32bits of c_h useds)
     add_avx_b_small(c, c_l, c1);             // c1 = c_hl*P_n <= (2^32-1)*(2^32-1) <= 2^64 -2^33+1 < P
 }
@@ -318,6 +322,7 @@ inline void Goldilocks::square_avx(__m256i &c, __m256i &a)
 
 inline void Goldilocks::square_avx_128(__m256i &c_h, __m256i &c_l, const __m256i &a)
 {
+    static const __m256i sqmask = _mm256_set_epi64x(0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF, 0x1FFFFFFFF);
 
     // Obtain a_h
     //__m256i a_h = _mm256_srli_epi64(a, 32);
