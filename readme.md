@@ -10,12 +10,19 @@ The repo contains precompiled shared libraries.
 
 ## Supported architectures:
 
-x86_64: Supports both AVX512 and AVX instructions
+x86_64: Supports three type of instruction sets - regular, AVX2, AVX512
 
 <em>The rest of the architecutres will be added later on</em>
 
 # Make
 
+## Ubuntu
+
 Install following deps:
 
 libgtest-dev, libomp-dev, libgmp-dev
+
+## macOS
+
+brew install libomp
+brew install gmp

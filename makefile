@@ -24,6 +24,9 @@ build-x86_64-avx512:
 	g++ --shared -o ./build/libvectorizedposeidongold.x86_64.avx512.so ./*.o
 	rm -rf ./*.o && rm -rf ./src/goldilocks/*.gch && rm -rf ./src/cwrapper/*.gch
 
+build-x86_64-macos:
+	g++ ./src/goldilocks/* ./src/cwrapper/CWrapper.h ./src/cwrapper/CWrapper.c -lgmp -lomp -fPIC -g -c -Wall -pthread -O2 -std=c++17 -L./build -L/usr/local/opt/libomp/lib -I/usr/local/opt/libomp/include -L/usr/local/Cellar/gmp/6.2.1_1/lib -I/usr/local/Cellar/gmp/6.2.1_1/include
+
 build-vectorizedposeidongold:
 	go build -mod=readonly -o ./build/vectorizedposeidongold -ldflags="-s -w" ./cmd
 
