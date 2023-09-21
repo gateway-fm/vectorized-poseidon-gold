@@ -5,6 +5,7 @@ import "C"
 import (
 	"fmt"
 	"math/rand"
+	"runtime"
 	"time"
 
 	"golang.org/x/sys/cpu"
@@ -20,6 +21,11 @@ func main() {
 		fmt.Println("Using AVX2")
 	} else {
 		fmt.Println("Using x64 instructions")
+	}
+	if runtime.GOOS == "linux" && runtime.GOARCH == "amd64" {
+		fmt.Println("Using vectorized version")
+	} else {
+		fmt.Println("Using iden3 version")
 	}
 
 	// var SIZE int = 1000000

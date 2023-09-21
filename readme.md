@@ -8,11 +8,11 @@ The C wrapper has a Go wrapper as well for easier integration.
 
 The repo contains precompiled shared libraries.
 
-## Supported architectures:
+## Supported platforms and architectures:
 
-x86_64: Supports three type of instruction sets - regular, AVX2, AVX512
-
-<em>The rest of the architecutres will be added later on</em>
+Lixux - x86_64: Supports three type of instruction sets - regular, AVX2, AVX512
+Mac - x86_64: To be added
+Mac - arm64: To be added
 
 # Make
 
