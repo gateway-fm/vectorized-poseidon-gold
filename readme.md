@@ -14,6 +14,8 @@ Lixux - x86_64: Supports three type of instruction sets - regular, AVX2, AVX512
 Mac - x86_64: To be added
 Mac - arm64: To be added
 
+If architecture is not supported the code falblack to iden3 library
+
 # Make
 
 ## Ubuntu
