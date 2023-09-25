@@ -3,21 +3,45 @@
 bool initialized = false;
 
 void hashAvx512(unsigned long long *input, unsigned long long *capacity, unsigned long long *result) {
-    const Goldilocks::Element goldilocksInput[12] = {
+    const Goldilocks::Element goldilocksInput[24] = {
         Goldilocks::fromU64(input[0]),
         Goldilocks::fromU64(input[1]),
         Goldilocks::fromU64(input[2]),
         Goldilocks::fromU64(input[3]),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
         Goldilocks::fromU64(input[4]),
         Goldilocks::fromU64(input[5]),
         Goldilocks::fromU64(input[6]),
         Goldilocks::fromU64(input[7]),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
         Goldilocks::fromU64(capacity[0]),
         Goldilocks::fromU64(capacity[1]),
         Goldilocks::fromU64(capacity[2]),
         Goldilocks::fromU64(capacity[3]),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
     };
-    Goldilocks::Element goldilocksResult[12] = {
+    Goldilocks::Element goldilocksResult[24] = {
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
+        Goldilocks::fromU64(0),
         Goldilocks::fromU64(0),
         Goldilocks::fromU64(0),
         Goldilocks::fromU64(0),
