@@ -15,20 +15,19 @@ import (
 )
 
 func main() {
-	if cpu.X86.HasAVX512F {
-		fmt.Println("Using AVX512")
-	} else if cpu.X86.HasAVX2 {
-		fmt.Println("Using AVX2")
-	} else {
-		fmt.Println("Using x64 instructions")
-	}
 	if runtime.GOOS == "linux" && runtime.GOARCH == "amd64" {
-		fmt.Println("Using vectorized version")
+		fmt.Println("Using C++ library version")
+		if cpu.X86.HasAVX512F {
+			fmt.Println("Using AVX512")
+		} else if cpu.X86.HasAVX2 {
+			fmt.Println("Using AVX2")
+		} else {
+			fmt.Println("Using x64 instructions")
+		}
 	} else {
 		fmt.Println("Using iden3 version")
 	}
 
-	// var SIZE int = 1000000
 	var SIZE int = 1000000
 	var TESTS int = 4
 

@@ -16,7 +16,7 @@ Mac - x86_64: To be added
 
 Mac - arm64: To be added
 
-If architecture is not supported the code falblack to iden3 library
+If architecture is not supported the code fallback to iden3 library
 
 # Make
 
