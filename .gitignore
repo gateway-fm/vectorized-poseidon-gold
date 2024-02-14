@@ -1,3 +1,3 @@
 **/*.o
 **/*.gch
-build/cmd-main
+build

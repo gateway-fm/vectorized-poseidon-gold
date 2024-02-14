@@ -8,7 +8,7 @@ void poseidongoldHash(unsigned long long *input, unsigned long long *capacity, u
     memset(goldilocksResult, 0, 12 * sizeof(unsigned long long));
 
 #ifdef __AVX512__
-    PoseidongoldHash_result_avx2(goldilocksResult, goldilocksInput);
+    PoseidongoldHash_result_avx512(goldilocksResult, goldilocksInput);
 #elif __AVX2__
     PoseidongoldHash_result_avx2(goldilocksResult, goldilocksInput);
 #else
