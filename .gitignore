@@ -1,3 +1,3 @@
 **/*.o
 **/*.gch
-build/vectorizedposeidongold
+build/cmd-main

@@ -1,11 +1,8 @@
 package main
 
-import "C"
-
 import (
 	"fmt"
 	"math/rand"
-	"runtime"
 	"time"
 
 	"golang.org/x/sys/cpu"
@@ -15,17 +12,12 @@ import (
 )
 
 func main() {
-	if runtime.GOOS == "linux" && runtime.GOARCH == "amd64" {
-		fmt.Println("Using C++ library version")
-		if cpu.X86.HasAVX512F {
-			fmt.Println("Using AVX512")
-		} else if cpu.X86.HasAVX2 {
-			fmt.Println("Using AVX2")
-		} else {
-			fmt.Println("Using x64 instructions")
-		}
+	if cpu.X86.HasAVX512F {
+		fmt.Println("Using AVX512")
+	} else if cpu.X86.HasAVX2 {
+		fmt.Println("Using AVX2")
 	} else {
-		fmt.Println("Using iden3 version")
+		fmt.Println("Using x64 scalars")
 	}
 
 	var SIZE int = 1000000
