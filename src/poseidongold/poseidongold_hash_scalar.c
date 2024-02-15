@@ -1,7 +1,5 @@
 #include "poseidongold_hash_scalar.h"
 
-#include <immintrin.h>
-
 inline void PoseidongoldHash_pow7(PoseidongoldElement *x) {
     PoseidongoldElement x2 = PoseidongoldElement_mul(*x, *x);
     PoseidongoldElement x3 = PoseidongoldElement_mul(*x, x2);

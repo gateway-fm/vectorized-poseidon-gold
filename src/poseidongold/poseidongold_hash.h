@@ -1,18 +1,19 @@
 #ifndef POSEIDONGOLD
 #define POSEIDONGOLD
 
-#include <immintrin.h>
-#include <stdio.h>
-
 #include "poseidongold_element_inc.h"
 #include "poseidongold_hash_scalar.h"
 #include "poseidongold_hash_utils.h"
 
 #ifdef __AVX2__
+#include <immintrin.h>
+
 #include "poseidongold_hash_avx2.h"
 #endif
 
 #ifdef __AVX512F__
+#include <immintrin.h>
+
 #include "poseidongold_hash_avx512.h"
 #endif
 

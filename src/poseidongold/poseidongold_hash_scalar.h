@@ -1,8 +1,6 @@
 #ifndef POSEIDONGOLD_SCALAR
 #define POSEIDONGOLD_SCALAR
 
-#include <immintrin.h>
-
 #include "poseidongold_element_inc.h"
 #include "poseidongold_hash_utils.h"
 

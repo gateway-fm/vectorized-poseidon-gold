@@ -1,7 +1,5 @@
 #include "poseidongold_hash.h"
 
-#include <immintrin.h>
-
 #ifdef __AVX2__
 bool PoseidongoldHash_initializedAvx2 = false;
 #endif  // AVX2 guard
