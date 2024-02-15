@@ -6,7 +6,7 @@
 bool PoseidongoldHash_initializedAvx2 = false;
 #endif  // AVX2 guard
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 bool PoseidongoldHash_initializedAvx512 = false;
 #endif  // AVX2 guard
 
@@ -109,7 +109,7 @@ void PoseidongoldHash_result_avx2(PoseidongoldElement *state, const Poseidongold
 
 #endif  // AVX2 guard
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 void PoseidongoldHash_result_avx512(PoseidongoldElement *state, const PoseidongoldElement *input) {
     if (!PoseidongoldHash_initializedAvx512) {

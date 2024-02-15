@@ -1,7 +1,7 @@
 #ifndef POSEIDONGOLD_ELEMENT_AVX512
 #define POSEIDONGOLD_ELEMENT_AVX512
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 #include <immintrin.h>
 

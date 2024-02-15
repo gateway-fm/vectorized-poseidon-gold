@@ -1,6 +1,6 @@
 #include "poseidongold_element_avx512.h"
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 __m512i P8;
 __m512i P8_n;

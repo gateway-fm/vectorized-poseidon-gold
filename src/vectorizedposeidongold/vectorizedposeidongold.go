@@ -5,6 +5,8 @@ package vectorizedposeidongold
 #cgo LDFLAGS: -fPIC
 #include "../poseidongold/poseidongold_element_avx2.h"
 #include "../poseidongold/poseidongold_element_avx2.c"
+#include "../poseidongold/poseidongold_element_avx512.h"
+#include "../poseidongold/poseidongold_element_avx512.c"
 #include "../poseidongold/poseidongold_element_inc.h"
 #include "../poseidongold/poseidongold_element_scalar.h"
 #include "../poseidongold/poseidongold_element_scalar.c"
@@ -14,6 +16,8 @@ package vectorizedposeidongold
 #include "../poseidongold/poseidongold_element.c"
 #include "../poseidongold/poseidongold_hash_avx2.h"
 #include "../poseidongold/poseidongold_hash_avx2.c"
+#include "../poseidongold/poseidongold_hash_avx512.h"
+#include "../poseidongold/poseidongold_hash_avx512.c"
 #include "../poseidongold/poseidongold_hash_scalar.h"
 #include "../poseidongold/poseidongold_hash_scalar.c"
 #include "../poseidongold/poseidongold_hash_utils.h"

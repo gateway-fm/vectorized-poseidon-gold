@@ -5,7 +5,15 @@
 #include "../../src/poseidongold/poseidongold_hash.h"
 
 int main() {
-    const size_t size = 1;
+#ifdef __AVX512F__
+    printf("Using AVX512\n");
+#elif __AVX2__
+    printf("Using AVX2\n");
+#else
+    printf("Using scalars\n");
+#endif
+
+    const size_t size = 8;
 
     uint64_t input[][8] = {
         {5577006791947779410ULL, 8674665223082153551ULL, 15352856648520921629ULL, 13260572831089785859ULL, 3916589616287113937ULL, 6334824724549167320ULL, 9828766684487745566ULL, 10667007354186551956ULL},
@@ -30,13 +38,28 @@ int main() {
     uint64_t result[4];
 
     for (int i = 0; i < size; ++i) {
+#ifdef __AVX512F__
+        PoseidongoldElement goldilocksInput[24];
+        PoseidongoldElement goldilocksResult[24];
+        memcpy(goldilocksInput, input[i], 4 * sizeof(unsigned long long));
+        memcpy(goldilocksInput + 8, input[i] + 4, 4 * sizeof(unsigned long long));
+        memcpy(goldilocksInput + 16, capacity[i], 4 * sizeof(unsigned long long));
+        memset(goldilocksResult, 0, 24 * sizeof(unsigned long long));
+#else
         PoseidongoldElement goldilocksInput[12];
-        memcpy(goldilocksInput, input + i, 8 * sizeof(uint64_t));
-        memcpy(goldilocksInput + 8, capacity + i, 4 * sizeof(uint64_t));
         PoseidongoldElement goldilocksResult[12];
-        memset(goldilocksResult, 0, 12 * sizeof(PoseidongoldElement));
+        memcpy(goldilocksInput, input[i], 8 * sizeof(unsigned long long));
+        memcpy(goldilocksInput + 8, capacity[i], 4 * sizeof(unsigned long long));
+        memset(goldilocksResult, 0, 12 * sizeof(unsigned long long));
+#endif
 
+#ifdef __AVX512F__
+        PoseidongoldHash_result_avx512(goldilocksResult, goldilocksInput);
+#elif __AVX2__
         PoseidongoldHash_result_avx2(goldilocksResult, goldilocksInput);
+#else
+        PoseidongoldHash_result_scalar(goldilocksResult, goldilocksInput);
+#endif
 
         result[0] = PoseidongoldElement_toU64(goldilocksResult[0]);
         result[1] = PoseidongoldElement_toU64(goldilocksResult[1]);

@@ -9,7 +9,7 @@
 #include "poseidongold_element_avx2.h"
 #endif
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 #include "poseidongold_element_avx512.h"
 #endif
 
