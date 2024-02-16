@@ -12,12 +12,14 @@ import (
 )
 
 func main() {
-	if cpu.X86.HasAVX512F {
-		fmt.Println("Using AVX512")
-	} else if cpu.X86.HasAVX2 {
-		fmt.Println("Using AVX2")
+	if vectorizedposeidongold.UsingSimd {
+		if cpu.X86.HasAVX512F {
+			fmt.Println("Using AVX512")
+		} else if cpu.X86.HasAVX2 {
+			fmt.Println("Using AVX2")
+		}
 	} else {
-		fmt.Println("Using x64 scalars")
+		fmt.Println("Using scalars")
 	}
 
 	var SIZE int = 1000000

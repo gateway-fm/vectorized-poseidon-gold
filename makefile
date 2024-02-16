@@ -12,6 +12,7 @@ BUILD_GO_DIR=$(BUILD_DIR)/go
 
 # Define the compiler
 CC=gcc
+# CC=aarch64-linux-gnu-gcc
 
 # Define any compile-time flags
 CFLAGS=-Wall -g -MMD -MP -O2 -march=native -std=c17
@@ -26,7 +27,7 @@ LDFLAGS=
 LIBS=
 
 # Define the C source files
-MAIN_SRC=$(shell find $(CMD_C_DIR) -name '*.c')
+MAIN_SRC=$(shell find $(CMD_C_DIR) -name 'main.c')
 SRCS=$(shell find $(SRC_DIR) -name '*.c')
 
 # Define the C object files
@@ -63,6 +64,9 @@ $(BUILD_C_DIR)/%.o: $(SRC_DIR)/%.c
 
 go:
 	@go build -mod=readonly -o $(BUILD_GO_DIR)/main -ldflags="-s -w" $(CMD_GO_DIR)/main.go
+
+asm-fallback:
+	@gcc -o $(BUILD_C_DIR)/asm-fallback $(CMD_C_DIR)/asm-fallback.c
 
 clean:
 	rm -rf $(BUILD_DIR)

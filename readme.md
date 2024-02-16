@@ -5,3 +5,17 @@ This repository is a Go wrapper of https://github.com/0xPolygonHermez/goldilocks
 It contains a C implementation of the goldilocks C++ library.
 
 The C wrapper has a Go wrapper as well for easier integration.
+
+# Testing ARM on x86
+
+1. Install qemu
+
+    apt-get install qemu-system qemu-user
+
+2. Install GCC for arm
+
+    sudo apt-get install gcc-aarch64-linux-gnu
+
+3. Start compiled binary
+
+    qemu-aarch64 -L /usr/aarch64-linux-gnu/ <path>

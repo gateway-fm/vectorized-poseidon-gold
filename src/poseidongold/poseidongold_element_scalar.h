@@ -16,7 +16,6 @@ PoseidongoldElement PoseidongoldElement_dec(const PoseidongoldElement fe);
 
 PoseidongoldElement PoseidongoldElement_mul(const PoseidongoldElement in1, const PoseidongoldElement in2);
 void PoseidongoldElement_loadMul(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2);
-void PoseidongoldElement_loadMul2(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2);
 
 PoseidongoldElement PoseidongoldElement_square(const PoseidongoldElement in1);
 void PoseidongoldElement_loadSquare(PoseidongoldElement *result, const PoseidongoldElement in1);

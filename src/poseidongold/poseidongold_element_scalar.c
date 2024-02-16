@@ -6,6 +6,7 @@ inline PoseidongoldElement PoseidongoldElement_add(const PoseidongoldElement in1
     return result;
 }
 inline void PoseidongoldElement_loadAdd(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2) {
+#ifdef __x86_64__
     __asm__(
         "xor   %%r10, %%r10\n\t"
         "mov   %1, %0\n\t"
@@ -18,6 +19,17 @@ inline void PoseidongoldElement_loadAdd(PoseidongoldElement *result, const Posei
         : "=&a"(*result)
         : "r"(in1), "r"(in2), "m"(PoseidongoldElement_CQ), "m"(PoseidongoldElement_ZR)
         : "%r10");
+#else
+    bool carry = in1 > UINT64_MAX - in2;
+    *result = in1 + in2;
+    if (carry) {
+        carry = *result > UINT64_MAX - PoseidongoldElement_CQ;
+        *result += PoseidongoldElement_CQ;
+        if (carry) {
+            *result += PoseidongoldElement_CQ;
+        }
+    }
+#endif
 }
 
 inline PoseidongoldElement PoseidongoldElement_inc(const PoseidongoldElement fe) {
@@ -39,6 +51,7 @@ inline PoseidongoldElement PoseidongoldElement_sub(const PoseidongoldElement in1
 }
 
 inline void PoseidongoldElement_loadSub(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2) {
+#ifdef __x86_64__
     __asm__(
         "xor   %%r10, %%r10\n\t"
         "mov   %1, %0\n\t"
@@ -51,6 +64,17 @@ inline void PoseidongoldElement_loadSub(PoseidongoldElement *result, const Posei
         : "=&a"(*result)
         : "r"(in1), "r"(in2), "m"(PoseidongoldElement_CQ), "m"(PoseidongoldElement_ZR)
         : "%r10");
+#else
+    bool carry = in1 < in2;
+    *result = in1 - in2;
+    if (carry) {
+        carry = *result < PoseidongoldElement_CQ;
+        *result -= PoseidongoldElement_CQ;
+        if (carry) {
+            *result -= PoseidongoldElement_CQ;
+        }
+    }
+#endif
 }
 
 inline PoseidongoldElement PoseidongoldElement_dec(const PoseidongoldElement fe) {
@@ -70,28 +94,21 @@ inline PoseidongoldElement PoseidongoldElement_mul(const PoseidongoldElement in1
 }
 
 inline void PoseidongoldElement_loadMul(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2) {
+#ifdef __x86_64__
     __asm__(
         "mov   %1, %0\n\t"
         "mul   %2\n\t"
-        // "xor   %%rbx, %%rbx\n\t"
         "mov   %%edx, %%ebx\n\t"
         "sub   %4, %%rbx\n\t"
         "rol   $32, %%rdx\n\t"
-        //"xor   %%rcx, %%rcx;\n\t"
         "mov   %%edx, %%ecx\n\t"
         "sub   %%rcx, %%rdx\n\t"
         "add   %4, %%rcx\n\t"
         "sub   %%rbx, %%rdx\n\t"
-        //"mov   %3,%%r10 \n\t"
         "xor   %%rbx, %%rbx\n\t"
         "add   %%rdx, %0\n\t"
         "cmovc %3, %%rbx\n\t"
         "add   %%rbx, %0\n\t"
-        // TODO: migrate to labels
-        //"xor   %%rbx, %%rbx\n\t"
-        //"sub   %%rcx, %0\n\t"
-        //"cmovc %%r10, %%rbx\n\t"
-        //"sub   %%rbx, %0\n\t"
         "sub   %%rcx, %0\n\t"
         "jnc  1f\n\t"
         "sub   %3, %0\n\t"
@@ -99,16 +116,54 @@ inline void PoseidongoldElement_loadMul(PoseidongoldElement *result, const Posei
         : "=&a"(*result)
         : "r"(in1), "r"(in2), "m"(PoseidongoldElement_CQ), "m"(PoseidongoldElement_TWO32)
         : "%rbx", "%rcx", "%rdx");
-}
+#else
+#ifdef __SIZEOF_INT128__
+    __uint128_t result128 = ((__uint128_t)in1) * in2;
+    *result = result128 & 0xFFFFFFFFFFFFFFFF;
+    uint64_t rdx = (result128 >> 64);
+#else
+    *result = in1 * in2;
+    uint64_t lo = in1 * in2;
 
-inline void PoseidongoldElement_loadMul2(PoseidongoldElement *result, const PoseidongoldElement in1, const PoseidongoldElement in2) {
-    __asm__(
-        "mov   %1, %%rax\n\t"
-        "mul   %2\n\t"
-        "divq   %3\n\t"
-        : "=&d"(*result)
-        : "r"(in1), "r"(in2), "m"(PoseidongoldElement_Q)
-        : "%rax");
+    uint64_t x0 = in1 & 0xFFFFFFFF;
+    uint64_t x1 = in1 >> 32;
+
+    uint64_t y0 = in2 & 0xFFFFFFFF;
+    uint64_t y1 = in2 >> 32;
+
+    uint64_t p11 = x1 * y1;
+    uint64_t p01 = x0 * y1;
+    uint64_t p10 = x1 * y0;
+    uint64_t p00 = x0 * y0;
+
+    // 64-bit product + two 32-bit values
+    uint64_t middle = p10 + (p00 >> 32) + (p01 & 0xFFFFFFFF);
+
+    // 64-bit product + two 32-bit values
+    uint64_t rdx = p11 + (middle >> 32) + (p01 >> 32);
+#endif
+    uint64_t rbx = rdx & 0xFFFFFFFF;
+
+    rbx -= PoseidongoldElement_TWO32;
+    rdx = (rdx << 32) | (rdx >> 32);
+
+    uint64_t rcx = rdx & 0xFFFFFFFF;
+    rdx -= rcx;
+    rcx += PoseidongoldElement_TWO32;
+    rdx -= rbx;
+
+    bool carry = *result > UINT64_MAX - rdx;
+    *result += rdx;
+    if (carry) {
+        *result += PoseidongoldElement_CQ;
+    }
+
+    carry = *result < rcx;
+    *result -= rcx;
+    if (carry) {
+        *result -= PoseidongoldElement_CQ;
+    }
+#endif
 }
 
 inline PoseidongoldElement PoseidongoldElement_square(const PoseidongoldElement in1) { return PoseidongoldElement_mul(in1, in1); }
