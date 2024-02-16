@@ -1,9 +1,9 @@
-//go:build !amd64
+//go:build amd64
 
 package vectorizedposeidongold
 
 /*
-#cgo CFLAGS: -fPIC -O2 -std=c17
+#cgo CFLAGS: -fPIC -O2 -march=native -std=c17
 #cgo LDFLAGS: -fPIC
 #include "../poseidongold/poseidongold_element_avx2.h"
 #include "../poseidongold/poseidongold_element_avx2.c"
@@ -31,9 +31,13 @@ package vectorizedposeidongold
 */
 import "C"
 
-import "unsafe"
+import (
+	"unsafe"
 
-var UsingSimd = false
+	"golang.org/x/sys/cpu"
+)
+
+var UsingSimd = cpu.X86.HasAVX || cpu.X86.HasAVX512F
 var UsingScalars = !UsingSimd
 
 func HashWithResult(in *[8]uint64, capacity *[4]uint64, result *[4]uint64) {

@@ -2,31 +2,20 @@
 
 This repository is a Go wrapper of https://github.com/0xPolygonHermez/goldilocks using commit [353f7c0a44914ad0443c06c91a0f81639bc974c8](https://github.com/0xPolygonHermez/goldilocks/commit/353f7c0a44914ad0443c06c91a0f81639bc974c8) from 21.08.2023
 
-It contains the C wrapper of the goldilocks C++ library. Both compilied as a shared library.
+It contains a C implementation of the goldilocks C++ library.
 
 The C wrapper has a Go wrapper as well for easier integration.
 
-The repo contains precompiled shared libraries.
+# Testing ARM on x86
 
-## Supported platforms and architectures:
+1. Install qemu
 
-Lixux - x86_64: Supports three type of instruction sets - regular, AVX2, AVX512
+    apt-get install qemu-system qemu-user
 
-Mac - x86_64: To be added
+2. Install GCC for arm
 
-Mac - arm64: To be added
+    sudo apt-get install gcc-aarch64-linux-gnu
 
-If architecture is not supported the code fallback to iden3 library
+3. Start compiled binary
 
-# Make
-
-## Ubuntu
-
-Install following deps:
-
-libgtest-dev, libomp-dev, libgmp-dev
-
-## macOS
-
-brew install libomp
-brew install gmp
+    qemu-aarch64 -L /usr/aarch64-linux-gnu/ <path>

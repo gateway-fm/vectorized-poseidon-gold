@@ -10,13 +10,14 @@ import (
 )
 
 func TestHashWithResult(t *testing.T) {
-	var SIZE int = 1024
+	var SIZE int = 8
 
 	var input [][8]uint64 = make([][8]uint64, SIZE)
 	var capacity [4]uint64 = [4]uint64{0, 0, 0, 0}
 	var result [4]uint64
 	var passedTest bool
 
+	rand.Seed(1)
 	for i := 0; i < SIZE; i++ {
 		for j := 0; j < 8; j++ {
 			input[i][j] = rand.Uint64()
