@@ -1,6 +1,6 @@
 module github.com/gateway-fm/vectorized-poseidon-gold
 
-go 1.20
+go 1.25
 
 require (
 	github.com/iden3/go-iden3-crypto v0.0.15
